@@ -9,7 +9,7 @@ const { validateEditProfileData } = require("../utils/validation");
 //Profileview Api
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
-    const user = req.user; // Set by userAuth middleware
+    const user = req.user; 
 
     res.send(user);
   } catch (err) {
@@ -31,10 +31,10 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       loggedInUser[key] = req.body[key];
     });
 
-    // Save changes
+  
     await loggedInUser.save();
 
-    // ✅ Send JSON with updated user data
+    
     res.status(200).json({
       message: "Profile updated successfully!",
       data: loggedInUser,

@@ -72,7 +72,6 @@ requestRouter.post(
   userAuth,
   async (req, res) => {
     try {
-      // Change this line from res.user to req.user
       const loggedInUser = req.user;
 
       if (!loggedInUser) {

@@ -3,6 +3,7 @@ const connectDB = require("./config/database");
 const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
 
 app.use(
   cors({
@@ -10,6 +11,8 @@ app.use(
     credentials: true,
   })
 );
+
+dotenv.config();
 
 //middleware
 app.use(express.json());
@@ -28,8 +31,8 @@ app.use("/", userRouter);
 connectDB()
   .then(() => {
     console.log("Database Connected successfully...");
-    app.listen(3000, () => {
-      console.log("Server is running Successfully on PORT 3000..");
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server is running Successfully on PORT ${process.env.PORT}`);
     });
   })
   .catch((err) => {
