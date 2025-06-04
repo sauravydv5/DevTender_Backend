@@ -2,11 +2,12 @@ const express = require("express");
 const userAuth = require("../middleware/auth");
 
 const paymentRouter = express.Router();
-const razorpayInstance = require("../utils/razorpay");
+const instance = require("../utils/razorpay");
+const Razorpay = require("razorpay");
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   try {
-    const order = await razorpayInstance.orders.create({
+    const order = await instance.orders.create({
       amount: 2000, // in paisa
       currency: "INR",
       receipt: "receipt#1",
@@ -25,7 +26,7 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     });
   } catch (error) {
     console.error("Razorpay error:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error });
   }
 });
 
