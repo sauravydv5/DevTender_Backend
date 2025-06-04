@@ -5,43 +5,43 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const http = require("http");
-const port = process.env.PORT || 5000;
+
 dotenv.config();
+
+const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173"], // add production URL here
     credentials: true,
   })
 );
 
-//middleware
+// middleware
 app.use(express.json());
 app.use(cookieParser());
 
-const authRouter = require("./routers/auth");
-const profileRouter = require("./routers/profile");
-const requestRouter = require("./routers/request");
-const userRouter = require("./routers/user");
-const paymentRouter = require("./routers/payment");
+// routers
+app.use("/", require("./routers/auth"));
+app.use("/", require("./routers/profile"));
+app.use("/", require("./routers/request"));
+app.use("/", require("./routers/user"));
+app.use("/", require("./routers/payment"));
+
+// socket
 const initializeSocket = require("./utils/socket");
-
-app.use("/", authRouter);
-app.use("/", profileRouter);
-app.use("/", requestRouter);
-app.use("/", userRouter);
-app.use("/", paymentRouter);
-
 const server = http.createServer(app);
 initializeSocket(server);
 
+// connect DB and start server
 connectDB()
   .then(() => {
     console.log("Database Connected successfully...");
-    server.listen(port || 3000, () => {
-      console.log(`Server is running Successfully on PORT ${process.env.port}`);
+    server.listen(port, () => {
+      console.log(`Server is running Successfully on PORT ${port}`);
     });
   })
   .catch((err) => {
-    console.error("Database cannot be connected..");
+    console.error("Database cannot be connected..", err);
+    process.exit(1);
   });
