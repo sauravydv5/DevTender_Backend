@@ -12,7 +12,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"], // add production URL here
+    origin: ["http://localhost:5173", "https://dev-tender-ui.vercel.app/login"], // add production URL here
     credentials: true,
   })
 );
