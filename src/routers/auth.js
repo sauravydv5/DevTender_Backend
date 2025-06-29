@@ -41,37 +41,81 @@ authRouter.post("/signup", async (req, res) => {
 
 //login Api
 
+// authRouter.post("/login", async (req, res) => {
+//   try {
+//     const { emailId, password } = req.body;
+
+//     const user = await User.findOne({ emailId: emailId });
+//     if (!user) {
+//       throw new Error("Invalid credentials");
+//     }
+//     const isPasswordValid = await user.validatePassword(password);
+
+//     if (isPasswordValid) {
+//       const token = await user.getJWT();
+
+//       res.cookie("token", token, {
+//         expires: new Date(Date.now() + 8 * 3600000),
+//       });
+//       res.send(user);
+//     } else {
+//       throw new Error("Invalid credentials");
+//     }
+//   } catch (err) {
+//     res.status(400).send("ERROR : " + err.message);
+//   }
+// });
+
 authRouter.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
 
-    const user = await User.findOne({ emailId: emailId });
-    if (!user) {
-      throw new Error("Invalid credentials");
-    }
+    const user = await User.findOne({ emailId });
+    if (!user) throw new Error("Invalid credentials");
+
     const isPasswordValid = await user.validatePassword(password);
+    if (!isPasswordValid) throw new Error("Invalid credentials");
 
-    if (isPasswordValid) {
-      const token = await user.getJWT();
+    const token = user.getJWT();
 
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 8 * 3600000),
-      });
-      res.send(user);
-    } else {
-      throw new Error("Invalid credentials");
-    }
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
+    res.status(200).json({
+      message: "Login successful!",
+      token,
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailId: user.emailId,
+      },
+    });
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ message: "ERROR: " + err.message });
   }
 });
 
 //logout APi
-authRouter.post("/logout", async (req, res) => {
+// authRouter.post("/logout", async (req, res) => {
+//   res.cookie("token", null, {
+//     expires: new Date(Date.now()),
+//   });
+//   res.send("Logout Successful!!");
+// });
+
+authRouter.post("/logout", (req, res) => {
   res.cookie("token", null, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
     expires: new Date(Date.now()),
   });
-  res.send("Logout Successful!!");
+  res.send("Logout successful!");
 });
 
 module.exports = authRouter;
